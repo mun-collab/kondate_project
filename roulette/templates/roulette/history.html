@@ -1,0 +1,133 @@
+{% extends "roulette/base.html" %}
+{% load static %}  
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <style>
+      .container { max-width: 650px; margin: 20px auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 0 #FBC02D; border: 5px solid #FF9800; }
+      h1 { color: #FF9800; text-align: center; margin-top: 10px; }
+      .back-link { display: block; text-align: center; margin-bottom: 20px; color: #1565C0; text-decoration: none; font-weight: bold; }
+      .search-box { background: #fff3e0; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px dashed #FF9800; }
+      .search-row { display: flex; flex-direction: column; gap: 10px; }
+      .search-input { padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 1em; }
+      table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+      th { background-color: #f8f9fa; color: #666; font-size: 0.9em; }
+      .genre-badge { background: #E3F2FD; padding: 6px 12px; border-radius: 10px; font-weight: bold; color: #1565C0; text-decoration: none; border: 2px solid #90CAF9; white-space: nowrap; }
+      
+      /* --- 検索ボタンの押し心地 --- */
+      .btn-search { background: #FF9800; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 2; transition: transform 0.1s, box-shadow 0.1s; box-shadow: 0 4px 0 #FBC02D; }
+      .btn-search:active { transform: translateY(2px); box-shadow: none; }
+
+      /* --- リセットボタン（ここがポイント！） --- */
+      .btn-reset { 
+          background: #eee; 
+          color: #666; 
+          text-decoration: none; 
+          padding: 12px; 
+          border-radius: 8px; 
+          font-size: 0.9em; 
+          flex: 1; 
+          text-align: center; 
+          display: inline-block; /* 動きを出すために必要 */
+          transition: transform 0.1s, box-shadow 0.1s; /* アニメーション */
+          box-shadow: 0 4px 0 #ccc; /* 影 */
+      }
+      .btn-reset:active { 
+          transform: translateY(2px); 
+          box-shadow: none; 
+      }
+
+      .delete-btn { background: #FF5252; color: white; border: none; padding: 8px 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 3px 0 #D32F2F; transition: transform 0.1s, box-shadow 0.1s; }
+      .delete-btn:active { transform: translateY(2px); box-shadow: none; }
+      .empty-state { text-align: center; padding: 40px 10px; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>📖 履歴</h1>
+    <a href="/" class="back-link">← ルーレットに戻る</a>
+    
+    <h2>1.献立履歴</h2>
+    <div class="search-box">
+        <form method="get" action="{% url 'history_list' %}">
+            <div class="search-row">
+                <input type="text" name="search" placeholder="なに食べたっけ？(献立名)" value="{{ request.GET.search|default:'' }}" class="search-input">
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.9em; color: #666;">いつ食べた？:</span>
+                    <input type="date" name="date" value="{{ request.GET.date|default:'' }}" class="search-input" style="flex-grow: 1;">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-search">🔍 検索する</button>
+                    <a href="{% url 'history_list' %}" class="btn-reset">リセット</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if ranking and not request.GET.search and not request.GET.date %}
+    <div style="margin-bottom: 25px;">
+        <h3 style="text-align: center; color: #fbc02d; font-size: 1.1em; margin-bottom: 10px;">🏆 最近のよくばりランキング</h3>
+        <div style="display: flex; justify-content: space-around; gap: 10px;">
+            {% for item in ranking %}
+            <div style="flex: 1; background: #fffde7; padding: 10px; border-radius: 12px; text-align: center; border: 2px solid #fff59d; position: relative;">
+                <div style="font-size: 1.5em; margin-bottom: 5px;">
+                    {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                </div>
+                <div style="font-weight: bold; font-size: 0.9em; color: #555;">{{ item.genre_name }}</div>
+                <div style="font-size: 0.8em; color: #999;">{{ item.count }}回</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if histories %}
+    <h3>2.ルーレット履歴</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>日時</th>
+                    <th>詳細</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in histories %}
+                <tr>
+                    <td style="font-size: 0.8em;">{{ item.created_at|date:"Y/m/d H:i" }}</td>
+                    <td>
+                        <a href="https://cookpad.com/search/{{ item.genre_name|urlencode }}" 
+                           target="_blank" class="genre-badge" style="display: inline-block; margin-bottom: 5px;">
+                            {{ item.genre_name }} 🔗
+                        </a>
+                        {% if item.recipe_url %}
+                            <br><a href="{{ item.recipe_url }}" target="_blank" style="font-size: 0.8em; color: #4CAF50;">📖 レシピを見る</a>
+                        {% endif %}
+                        {% if item.memo %}
+                            <p style="font-size: 0.8em; color: #666; margin: 5px 0;">💬 {{ item.memo }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{% url 'delete_history' item.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn" onclick="return confirm('本当にこの履歴を消してもいい？')">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div style="font-size: 4em; margin-bottom: 10px;">📂💨</div>
+            <h3 style="color: #999;">データが見つかりませんでした</h3>
+            <a href="{% url 'index' %}" style="color: #FF9800; font-weight: bold; text-decoration: none;">🏠 ルーレットを回しにいく</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

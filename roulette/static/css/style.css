@@ -1,0 +1,372 @@
+/* =========================================
+   基本リセット（隙間をなくす魔法の設定）
+   ========================================= */
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html {
+    width: 100%;
+    height: 100%;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    
+    /* --- 背景の設定 --- */
+    background-color: #FFEB3B; /* ベースの黄色 */
+    
+    /* 画像ファイル名は保存したものに合わせてください (food_bg.png か foods_bg.png) */
+    background-image: url('../images/foods_bg.png'); 
+    
+    background-repeat: repeat;    /* タイル状に並べる */
+    background-size: 1450px;       /* ★ここが重要：アイコンのサイズを固定してきれいに見せる */
+    background-attachment: fixed; /* スクロールしても背景を動かさない */
+    
+    color: #333;
+    text-align: center;
+    min-height: 100vh; /* 画面よりコンテンツが長くなっても背景を途切れさせない */
+    overflow-x: hidden;
+  }
+  
+  /* =========================================
+     ヘッダー（オレンジの帯）
+     ========================================= */
+  header, .header-banner {
+    width: 100%;
+    background-color: #FF9800; /* オレンジ */
+    padding: 10px 0;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 0 #F57C00; /* 少し立体的に */
+    position: relative;
+    z-index: 10;
+  }
+  
+  h1 {
+    font-size: 1.8em;
+    color: #FF9800; /* ピンク */
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 0 #FFF; /* 文字を見やすく */
+  }
+  
+  /* =========================================
+     メインコンテンツ（白い箱）の共通設定
+     ★すべての画面でここが使われます
+     ========================================= */
+  #app, .container, .post-container, .history-container {
+    max-width: 500px;        /* 横幅を統一 */
+    margin: 30px auto;       /* 上下の余白を統一 */
+    padding: 40px;
+    background: white;
+    border-radius: 30px;     /* 角を丸くしておもちゃ感を出す */
+    border: 5px solid #F57C00; /* 枠線 */
+    box-shadow: 0 5px 0 #FBC02D; /* 立体的な影 */
+  }
+  
+  /* =========================================
+     入力フォーム・ボタン類
+     ========================================= */
+  /* 入力・セレクトボックス */
+  select, input[type="text"], input[type="url"], input[type="date"], textarea {
+    width: 100%; /* 幅を親要素に合わせる */
+    padding: 12px;
+    font-size: 1em;
+    border-radius: 15px;
+    border: 3px solid #ddd;
+    outline: none;
+    background: #fdfdfd;
+    margin-top: 5px;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    border-color: #03A9F4;
+    background-color: #E1F5FE;
+  }
+  
+  /* ボタン共通設定 */
+  button, .btn ,.btn-reset{
+    padding: 12px 24px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+    display: inline-block;
+    text-decoration: none;
+  }
+  
+  button:active, .btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+  }
+  
+  /* 追加ボタン */
+  #addGenreBtn {
+    width: auto;
+    background: #4CAF50; /* 緑 */
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    gap: 5px;
+    box-shadow: 0 2px 0 #7be28d;
+  }
+  
+  /* スタートボタン / 投稿ボタン */
+  .primary-btn, .submit-btn {
+    background: #ff7322; /* オレンジ */
+    color: white;
+    font-size: 1.3em;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 5px 0 #FBC02D;
+  }
+  
+  /* 削除ボタン */
+  .delete-btn {
+    background: #f44336;
+    color: white;
+    padding: 5px 15px;
+    font-size: 0.8em;
+    box-shadow: 0 3px 0 #b71c1c;
+  }
+  
+  /* リセットボタン */
+  #clearSettings, .btn-reset {
+    background: #90A4AE;
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+  }
+  
+  /* リスト全体のスタイル */
+.genre-list {
+  list-style: none; /* ・を消す */
+  padding: 0;
+  margin: 10px 0;
+}
+
+/* 追加された各項目のデザイン */
+.genre-item {
+  background-color: #fff;     /* 背景を白に */
+  border: 1px solid #ddd;     /* 枠線をつける */
+  border-radius: 5px;         /* 角を丸く */
+  padding: 10px 15px;         /* 内側の余白 */
+  margin-bottom: 8px;         /* 下の隙間 */
+  display: flex;              /* 横並びにする */
+  justify-content: space-between; /* 両端に配置 */
+  align-items: center;        /* 上下中央揃え */
+  color: #333;                /* ★文字色を濃いグレーに（重要） */
+  
+}
+
+/* 削除ボタンのデザイン */
+.delete-btn {
+  background-color: #ef3434;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  color:#73beff,
+}
+.delete-btn:hover {
+  background-color: #ef7474;
+}
+  /* =========================================
+     ルーレット専用エリア
+     ========================================= */
+  #wheelCanvas {
+    background: white;
+    border-radius: 50%;
+    border: 8px solid #dd4200d4; 
+  
+    margin: 30px auto;
+    display: block;
+    max-width: 100%; /* スマホではみ出さないように */
+  }
+  
+  #wheelArrow {
+    font-size: 40px;
+    color: #f44336;
+    filter: drop-shadow(2px 2px 0 white);
+    top: 41.5px;
+    position: relative;
+  }
+  
+  /* 結果表示エリア */
+  #resultDisplay {
+    background: #FFF9C4;
+    padding: 15px;
+    border-radius: 20px;
+    border: 3px dashed #FF9800;
+    margin: 20px 0;
+    font-weight: bold;
+    color: #E91E63;
+  }
+  
+  /* 項目リスト */
+  #itemList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  /* 項目リストの各行 */
+#itemList li {
+  background: #E3F2FD;        /* 水色 */
+  border: 2px solid #90CAF9;  /* 枠線 */
+  border-radius: 20px;        /* 丸みを強くして可愛く */
+  
+  /* --- ここが変更ポイント --- */
+  margin: 15px 0;             /* 上下の間隔を広げる（8px -> 15px） */
+  padding: 15px 20px;         /* ボックス内の余白を広げて見やすく */
+  
+  display: flex;              /* 横並びにする */
+  justify-content: center;    /* ★中身（文字とゴミ箱）を「中央揃え」にする */
+  align-items: center;        /* 上下の位置も真ん中に */
+  gap: 15px;                  /* ★文字とゴミ箱ボタンの間隔を空ける */
+  
+  color: #1565C0;
+  font-weight: bold;
+  font-size: 1.1em;           /* 文字を少し大きく */
+  box-shadow: 0 4px 0 #BBDEFB; /* 影をつけてボタンっぽく立体的に */
+}
+  
+  /* =========================================
+     その他リンク・バッジなど
+     ========================================= */
+  /* 履歴画面などのリンク */
+  .back-link {
+    color: #03A9F4;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  
+  /* ジャンルバッジ（履歴画面） */
+  .genre-badge {
+    background: #E3F2FD;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    color: #FBC02D;
+    border: 1px solid #90CAF9;
+    text-decoration: none;
+  }
+  
+  /* ヘッダー内のログアウトボタン */
+  .btn-header-logout {
+    padding: 5px 10px !important;
+    font-size: 0.8em !important;
+    margin-left: 10px;
+    background: #E91E63;
+    color: white;
+    box-shadow: none !important;
+  }
+  
+/* 入力欄と追加ボタンの間隔を調整 */
+#genre-input-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* ここで間隔を調整 */
+  margin-bottom: 20px;
+}
+
+/* レシピ帳全体のコンテナ（オレンジの太枠） */
+.recipe-book-container {
+  max-width: 650px;
+  margin: 30px auto;
+  background: #FFF3E0;      /* 薄いオレンジの背景 */
+  padding: 25px;
+  border-radius: 30px;
+  border: 5px solid #FF9800; /* ★オレンジの太枠 */
+  box-shadow: 0 5px 0 #FBC02D; /* 立体的な影 */
+}
+
+/* タイトルのデザイン */
+.recipe-book-title {
+  text-align: center;
+  color: #FF9800;
+  margin-bottom: 20px;
+  font-size: 1.6em;
+  text-shadow: 1px 1px 0 white;
+}
+
+/* 検索エリア（白い内枠） */
+.recipe-search-area {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  border: 2px dashed #FFB74D; /* 点線でレシピ帳っぽく */
+}
+
+/* 入力欄のスタイル */
+.recipe-search-form .search-input,
+.recipe-search-form .date-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 2px solid #FFE0B2;
+  background: #FFFBFA;
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+
+/* 検索ボタンと日付の並び */
+.search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap; /* 改行禁止 */
+
+}
+
+
+.search-submit-btn {
+  background: #FF9800;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #FBC02D;
+}
+
+.search-submit-btn:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.reset-link {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  color: #999;
+  font-size: 0.9em;
+  text-decoration: none;
+}
+
+  .hidden {
+    display: none;
+  }    
+

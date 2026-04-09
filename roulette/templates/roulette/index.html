@@ -1,0 +1,80 @@
+{% extends 'roulette/base.html' %}
+{% load static %}
+
+{% block title %}トップ - 献立ルーレット{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+  {% csrf_token %}
+  
+  <div id="flashMessage" class="hidden"></div>
+
+  <div id="app">
+    <div id="settings">
+      <h1>🍽️ 献立ルーレット</h1>
+      <p>ルーレットの項目を設定してください。</p>
+      
+      <div class="setting-row">
+        <label>項目数</label>
+        <select id="itemCount">
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>        
+        </select>
+      </div>
+      
+      <div class="setting-row">
+        <label for="genreInput">ジャンル追加</label>
+        <div class="input-group">
+          <input type="text" id="genreInput" placeholder="例：和食">
+          <button id="addGenreBtn">追加</button>
+        </div>
+      </div>
+      
+      <div id="addedItemsContainer" style="margin-top: 20px;">
+        <h3>現在の項目リスト</h3>
+        <ul id="itemList" class="genre-list"></ul> 
+      </div>
+
+      <div class="main-actions">
+        <button id="startButton" class="primary-btn">ルーレット開始</button>
+        
+        <button id="clearSettings" class="secondary-btn">設定をリセット</button>
+      </div>
+    </div>
+
+    <div id="rouletteArea" class="hidden">
+      <div class="canvas-container">
+        <div id="wheelArrow">▼</div>
+        <canvas id="wheelCanvas" width="300" height="300"></canvas>
+      </div>
+
+      <div id="rouletteAreaButtons">
+        <button id="spinBtn">回す</button>
+        <button id="backBtn">戻る</button>
+      </div>
+
+      <div id="resultDisplay"></div>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+        <a href="{% url 'post_meal' %}" style="text-decoration: none; color: white; background: #FF9800; padding: 12px 24px; border-radius: 10px; font-weight: bold; box-shadow: 0 4px 0 #E68A00;">
+            📝 今日の献立を投稿する
+        </a>
+        <a href="{% url 'history_list' %}" style="text-decoration: none; color: #74b9ff; font-weight: bold; border: 2px solid #74b9ff; padding: 10px 22px; border-radius: 10px; background: white;">
+            📜 履歴をみる
+        </a>
+    </div>
+  </div>
+
+  <script src="{% static 'js/roulette.js' %}"></script>
+{% endblock %}

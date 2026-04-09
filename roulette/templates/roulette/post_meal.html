@@ -1,0 +1,98 @@
+{% extends "roulette/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    /* bodyへのpaddingやbackground指定を削除して、style.cssと統一 */
+    .post-container { 
+        max-width: 500px; 
+        margin: 20px auto; /* 上下に余白、左右中央寄せ */
+        background: white; 
+        padding: 30px; 
+        border-radius: 30px; /* おもちゃ感を出すために少し丸く */
+        border: 5px solid #FF9800; 
+        box-shadow: 0 5px 0 #FBC02D;
+    }
+    label { font-weight: bold; color: #555; display: block; margin-top: 15px; text-align: left; }
+    input, textarea { width: 100%; padding: 12px; margin-top: 5px; border-radius: 12px; border: 2px solid #ddd; box-sizing: border-box; font-size: 1em; }
+    input:focus, textarea:focus { border-color: #FF9800; outline: none; background: #fffde7; }
+    
+    .submit-btn { 
+        background: #4CAF50; 
+        color: white; 
+        border: none; 
+        width: 100%; 
+        padding: 15px; 
+        border-radius: 50px; 
+        font-weight: bold; 
+        font-size: 1.1em;
+        cursor: pointer; 
+        margin-top: 25px; 
+        box-shadow: 0 2px 0 #7be28d;
+        transition: all 0.1s;
+    }
+    .submit-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #388E3C; }
+    
+    .back-link { display: inline-block; margin-top: 20px; color: #1565C0; text-decoration: none; font-weight: bold; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="post-container">
+    <h2 style="color: #FF9800; text-align: center;">🍳 今日の献立を記録</h2>
+    <form id="postForm">
+        {% csrf_token %}
+        <label>献立名（ジャンル）</label>
+        <input type="text" id="genre-name" placeholder="例：ハンバーグ、和食など" required>
+        
+        <label>レシピURL</label>
+        <input type="url" id="recipe-url" placeholder="https://cookpad.com/...">
+        
+        <label>一言メモ</label>
+        <textarea id="memo" rows="3" placeholder="美味しかった！などの感想"></textarea>
+        
+        <button type="button" onclick="sendData()" class="submit-btn">この内容で投稿する</button>
+    </form>
+    <p style="text-align: center;"><a href="/" class="back-link">← ルーレットにもどる</a></p>
+</div>
+
+<script>
+function sendData() {
+    const genre = document.getElementById('genre-name').value;
+    const url = document.getElementById('recipe-url').value;
+    const memo = document.getElementById('memo').value;
+
+    if (!genre) {
+        alert("献立名（ジャンル）を入力してください");
+        return;
+    }
+
+    fetch('/save_result/', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({
+            genre: genre,
+            recipe_url: url,
+            memo: memo
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert("投稿が完了しました！");
+            window.location.href = "{% url 'post_list' %}"; 
+        } else {
+            alert("エラーが発生しました。");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("送信に失敗しました。");
+    });
+}
+</script>
+{% endblock %}
