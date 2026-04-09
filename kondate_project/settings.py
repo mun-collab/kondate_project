@@ -77,10 +77,13 @@ USE_I18N = True
 USE_TZ = True
 
 # --- 静的ファイルの設定 ---
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 # 本番環境でCSSなどを集約する場所を指定します
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # WhiteNoiseの設定STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+WHITENOISE_USE_FINDERS = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
