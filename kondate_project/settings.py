@@ -80,10 +80,16 @@ USE_TZ = True
 STATIC_URL = 'static/'
 # 本番環境でCSSなどを集約する場所を指定します
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# WhiteNoiseの設定
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# WhiteNoiseの設定STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# よりシンプルな配信方式に変更（ファイル名が変わっても対応できる設定）
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
