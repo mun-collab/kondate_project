@@ -115,3 +115,7 @@ def delete_history(request, history_id):
     redirect_url = 'post_list' if history.is_post else 'history_list'
     history.delete()
     return redirect(redirect_url)
+
+# views.py の末尾などに追加
+def privacy(request):
+    return render(request, 'roulette/privacy.html')

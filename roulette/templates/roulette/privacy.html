@@ -1,0 +1,22 @@
+{% extends 'roulette/base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px; color: #555; max-width: 800px; margin: 0 auto; line-height: 1.8;">
+    <h2 style="color: #ed1606; border-bottom: 2px solid #ed1606; padding-bottom: 10px;">プライバシーポリシー</h2>
+    
+    <section style="margin-top: 30px;">
+        <h3 style="font-size: 1.2rem;">1. 広告の配信について</h3>
+        <p>当サイトでは、第三者配信による広告サービス（Googleアドセンス、忍者AdMaxなど）を利用する場合があります。</p>
+        <p>これらの広告配信事業者は、ユーザーの興味に応じた商品やサービスの広告を表示するため、当サイトや他サイトへのアクセスに関する情報「Cookie」（氏名、住所、メールアドレス、電話番号は含まれません）を使用することがあります。</p>
+    </section>
+
+    <section style="margin-top: 20px;">
+        <h3 style="font-size: 1.2rem;">2. 免責事項</h3>
+        <p>当サイトのコンテンツ・情報について、できる限り正確な情報を掲載するよう努めておりますが、正確性や安全性を保証するものではありません。当サイトに掲載された内容によって生じた損害等の一切の責任を負いかねますのでご了承ください。</p>
+    </section>
+
+    <div style="margin-top: 40px; text-align: center;">
+            <a href="{% url 'index' %}" style="color: #ed1606; text-decoration: none;">← ホームに戻る</a>
+    </div>
+</div>
+{% endblock %}

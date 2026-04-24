@@ -13,4 +13,5 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('post/', views.post_meal, name='post_meal'),
     path('posts/', views.post_list, name='post_list'),
+    path('privacy/', views.privacy, name='privacy'),
 ]
