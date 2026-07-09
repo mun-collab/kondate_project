@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>会員登録 - 献立ルーレット</title>
+    <style>
+        body { font-family: sans-serif; background-color: #FFEB3B; text-align: center; }
+        .box { max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 20px; border: 5px solid #FF9800; box-shadow: 0 10px 0 #FBC02D; }
+        h2 { color: #FF9800; }
+        form p { text-align: left; font-size: 0.9em; color: #666; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 10px; border: 2px solid #ddd; box-sizing: border-box; }
+        button { width: 100%; background: #03A9F4; color: white; padding: 12px; border-radius: 50px; border: none; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #0288D1; margin-top: 20px; }
+        button:active { transform: translateY(3px); box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>会員登録</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">登録する</button>
+        </form>
+        <p><a href="{% url 'login' %}" style="color: #f52e2e; text-decoration: none;">すでにアカウントを持っているならログイン</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン - 献立ルーレット</title>
+    <style>
+        body { font-family: sans-serif; background-color: #FFEB3B; padding: 5px; text-align: center; }
+        .login-box { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 20px; border: 5px solid #FF9800; box-shadow: 0 5px 0 #FBC02D; }
+        h2 { color: #FF9800; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 10px; border: 2px solid #ddd; box-sizing: border-box; }
+        button { width: 100%; background: #4CAF50; color: white; padding: 12px; border-radius: 50px; border: none; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 0 #388E3C; }
+        button:active { transform: translateY(3px); box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>🔑 ログイン</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">ログインする</button>
+        </form>
+        <p><a href="{% url 'index' %}" style="color: #03A9F4; text-decoration: none;">← もどる</a></p>
+    </div>
+</body>
+</html>

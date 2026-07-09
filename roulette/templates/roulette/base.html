@@ -1,0 +1,69 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}献立ルーレット{% endblock %}</title>
+    <style>
+        /* 全ページ共通の基本スタイル */
+        body { font-family: sans-serif; margin: 0; padding: 0; background-color: #FFEB3B; }
+        
+        /* 全画面共通ヘッダー */
+        .main-header {
+            box-sizing: border-box;
+            margin: 0;
+            background: #FBC02D;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            border-bottom: 5px solid #F57C00;
+            position: sticky; /* スクロールしても上に残る */
+            top: 0;
+            z-index: 1000;
+        }
+        .header-logo { font-weight: bold; font-size: 1.4em; text-decoration: none; color: white; }
+        .header-nav a { color: white; text-decoration: none; margin-left: 15px; font-weight: bold; font-size: 0.9em; }
+        .btn-header-post { background: #4CAF50; padding: 5px 12px; border-radius: 5px;box-shadow: 0 1px 0 #7be28d;}
+        .btn-header-logout { background: #E91E63; border: none; color: white; padding: 5px 12px; border-radius: 5px; cursor: pointer;box-shadow: 0 1px 0 #e886a7; }
+        
+        /* コンテンツエリアの余白 */
+        .content-container { padding: 20px; }
+        /* ホバー（マウスを乗せた時）の微調整（お好みで） */
+        .btn-header-post:hover, .btn-header-logout:hover {
+            filter: brightness(1.1); /* 少し明るくする */
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="/" class="header-logo">献立ルーレット</a>
+        
+        <nav class="header-nav">
+            {% if user.is_authenticated %}
+                <span>👤 {{ user.username }}さん</span>
+                <a href="{% url 'post_meal' %}" class="btn-header-post">➕ 投稿</a>
+                <a href="{% url 'post_list' %}">🍽️ 投稿一覧</a>
+                <a href="{% url 'history_list' %}">📜 履歴</a>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-header-logout">ログアウト</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">ログイン</a>
+                <a href="{% url 'signup' %}">会員登録</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="content-container">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>
