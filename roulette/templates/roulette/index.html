@@ -12,13 +12,23 @@
   
   <div id="flashMessage" class="hidden"></div>
 
+
+  <div class="setting-row" style="margin-top: 20px; border-top: 2px dashed #FF9800; padding-top: 20px;">
+    <label for="aiInput">🤖 AIに献立を相談する</label>
+    <div class="input-group" style="display: flex; gap: 5px; margin-top: 5px;">
+      <input type="text" id="aiInput" placeholder="例：体調が悪くてさっぱりしたもの、ガッツリ肉料理">
+      <button id="askAiBtn" style="background: #03A9F4; color: white; padding: 10px 15px; font-size: 1em; border-radius: 15px; box-shadow: 0 3px 0 #0288D1;">AIに聞く</button>
+    </div>
+    <div id="aiLoading" class="hidden" style="color: #03A9F4; margin-top: 5px; font-size: 0.9em;">🔍 Geminiが献立を考えています...</div>
+  </div>
+
   <div id="app">
     <div id="settings">
       <h1>🍽️ 献立ルーレット</h1>
       <p>ルーレットの項目を設定してください。</p>
       
       <div class="setting-row">
-        <label>項目数</label>
+        <label for="itemCount">項目数</label>
         <select id="itemCount">
             <option value="2">2</option>
             <option value="3" selected>3</option>

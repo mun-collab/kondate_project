@@ -7,6 +7,9 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.db.models import Count
 from .models import RouletteHistory
+from google import genai
+import os
+import traceback
 
 # --- 会員登録・ユーザー認証系 ---
 
@@ -115,3 +118,55 @@ def delete_history(request, history_id):
     redirect_url = 'post_list' if history.is_post else 'history_list'
     history.delete()
     return redirect(redirect_url)
+
+@require_POST
+def ai_suggest(request):
+    """ユーザーの気分や体調に合わせてGeminiが献立を3つ提案する"""
+    try:
+        # 1. データの受け取り
+        data = json.loads(request.body)
+        user_mood = data.get('mood', '').strip()
+        
+        if not user_mood:
+            return JsonResponse({'status': 'error', 'message': '気分を入力してください'}, status=400)
+
+        # 2. APIキーの取得とクライアント初期化
+        api_key = os.environ.get('GEMINI_API_KEY')
+        if not api_key:
+            return JsonResponse({'status': 'error', 'message': 'サーバー側でAPIキーが設定されていません'}, status=500)
+            
+        client = genai.Client(api_key=api_key)
+        
+        # 3. プロンプトの送信
+        prompt = f"「{user_mood}」というリクエストに合う料理・献立のアイデアを3つ考えてください。応答は余計な説明や挨拶、文章、番号は一切含めず、料理名だけを半角カンマ区切りで出力してください。例：カレー,ハンバーグ,オムライス"
+        
+        response = client.models.generate_content(
+            model='gemini-flash-latest',
+            contents=prompt,
+        )
+        
+        # 4. レスポンスの整形
+        raw_text = response.text.replace('\n', '').strip()
+        suggested_items = [item.strip() for item in raw_text.split(',') if item.strip()]
+        
+        return JsonResponse({'status': 'success', 'suggestions': suggested_items[:3]})
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'リクエストのデータ形式(JSON)が不正です'
+        }, status=400)
+
+    except Exception as e:
+        traceback.print_exc()
+
+        return JsonResponse({
+            "status": "error",
+            "message": repr(e)
+        }, status=500)
+    
+
+api_key = os.environ.get("GEMINI_API_KEY")
+
+print(repr(api_key))
+print([hex(ord(c)) for c in api_key[-5:]])

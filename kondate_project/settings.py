@@ -9,19 +9,43 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+import environ
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# 1. まず BASE_DIR を定義する
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# 2. 次に env を初期化する
+env = environ.Env(
+    DEBUG=(bool, False),
+    GEMINI_API_KEY=(str, None)
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+# 3. .env ファイルを読み込む
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j9kj(@cfgo66(t$ze%bew3q3*#b(el(5g!xb1jg2_yo3!$=4_*'
+# ---------------------------------------------------------
+# 環境変数の取得と設定
+# ---------------------------------------------------------
+# ① Djangoのシークレットキーを .env から取得
+SECRET_KEY = env('SECRET_KEY')
 
+# ② デバッグモードを .env から取得（なければ False）
+DEBUG = env('DEBUG')
+
+# ③ Gemini APIキーを .env から取得してOS環境変数にセット
+gemini_key = env('GEMINI_API_KEY')
+if gemini_key:
+    os.environ['GEMINI_API_KEY'] = gemini_key
+
+# ④ データベース設定（元々の安心なデフォルト状態に戻します）
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

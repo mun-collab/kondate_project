@@ -13,6 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const backBtn = document.getElementById("backBtn");
   const clearSettings = document.getElementById("clearSettings");
 
+  const aiInput = document.getElementById("aiInput");
+  const askAiBtn = document.getElementById("askAiBtn");
+  const aiLoading = document.getElementById("aiLoading");
+
   const ctx = canvas.getContext("2d");
   const radius = canvas.width / 2;
 
@@ -20,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentAngle = 0;
   let isSpinning = false;
 
-  const colors = ["#73beff","#ff7474","#5bffd0","#fff204","#a29bfe","#fab1a0","#81ecec","#fd79a8","#e17055","#dfe6e9"];
+  const colors = ["#73beff", "#ff7474", "#5bffd0", "#fff204", "#a29bfe", "#fab1a0", "#81ecec", "#fd79a8", "#e17055", "#dfe6e9"];
 
   // ---------------------------------------------------------
   // 2. リスト操作・描画
@@ -29,8 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
     itemList.innerHTML = "";
     genres.forEach((g, index) => {
       const li = document.createElement("li");
-      li.className = "genre-item"
-      
+      li.className = "genre-item";
+
       const span = document.createElement("span");
       span.textContent = g;
 
@@ -54,14 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const value = genreInput.value.trim();
     if (!value) return;
-    
+
     // 設定した個数制限のチェック
     const maxCount = Number(itemCount.value);
     if (genres.length >= maxCount) {
       alert(`設定した項目数（${maxCount}個）に達しています`);
       return;
     }
-    
+
     genres.push(value);
     genreInput.value = "";
     renderList();
@@ -82,20 +86,19 @@ document.addEventListener("DOMContentLoaded", () => {
   function drawWheel() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (genres.length === 0) return;
-  
+
     const slice = (Math.PI * 2) / genres.length;
-  
+
     genres.forEach((g, i) => {
       const start = currentAngle + i * slice;
       const end = start + slice;
-  
+
       ctx.beginPath();
       ctx.moveTo(radius, radius);
       ctx.arc(radius, radius, radius, start, end);
       ctx.fillStyle = colors[i % colors.length];
       ctx.fill();
-      
-  
+
       ctx.save();
       ctx.translate(radius, radius);
       ctx.rotate(start + slice / 2);
@@ -103,14 +106,14 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#333";
       ctx.font = "bold 18px sans-serif";
-  
+
       const characters = g.split("");
       const paddingOuter = 30;
       const charactersSpacing = 20;
-  
+
       characters.forEach((char, index) => {
         const x = radius - paddingOuter - (index * charactersSpacing);
-        if (x > 10) { 
+        if (x > 10) {
           ctx.save();
           ctx.translate(x, 0);
           ctx.rotate(Math.PI / 2);
@@ -120,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       ctx.restore();
     });
-    
   }
 
   // 画面切り替えイベント
@@ -146,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (genres.length < 2 || isSpinning) return;
     isSpinning = true;
     resultDisplay.innerHTML = "抽選中...";
-    
+
     const startRotation = currentAngle;
     const additionalRotation = Math.PI * 8 + Math.random() * Math.PI * 4;
     const duration = 2500;
@@ -159,11 +161,11 @@ document.addEventListener("DOMContentLoaded", () => {
       currentAngle = startRotation + additionalRotation * easeOut;
       drawWheel();
 
-      if (progress < 1) { 
-          requestAnimationFrame(animate); 
-      } else { 
-          isSpinning = false; 
-          determineResult(); 
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        isSpinning = false;
+        determineResult();
       }
     }
     requestAnimationFrame(animate);
@@ -175,9 +177,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const needleAngle = (Math.PI * 1.5);
     let index = Math.floor((needleAngle - normalizedAngle) / slice) % genres.length;
     if (index < 0) index += genres.length;
-    
+
     const result = genres[index];
-    
+
     // 1. 結果表示エリアの更新
     resultDisplay.innerHTML = `
       <div style="background: white; padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid #4CAF50;">
@@ -196,39 +198,118 @@ document.addEventListener("DOMContentLoaded", () => {
     const postArea = document.getElementById('post-area');
     const selectedGenreText = document.getElementById('selected-genre');
     if (postArea && selectedGenreText) {
-        selectedGenreText.innerText = result;
-        postArea.style.display = 'block';
-        postArea.scrollIntoView({ behavior: 'smooth' });
+      selectedGenreText.innerText = result;
+      postArea.style.display = 'block';
+      postArea.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
   function saveToHistory(genreName) {
-      const csrfTokenEl = document.querySelector('[name=csrfmiddlewaretoken]');
-      if (!csrfTokenEl) {
-          console.error("CSRFトークンが見つかりません。index.htmlに {% csrf_token %} を記述してください。");
-          return;
-      }
+    const csrfTokenEl = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (!csrfTokenEl) {
+      console.error("CSRFトークンが見つかりません。index.htmlに {% csrf_token %} を記述してください。");
+      return;
+    }
 
-      fetch("/save_result/", {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfTokenEl.value,
-          },
-          body: JSON.stringify({
-              genre: genreName,
-              recipe_url: "",
-              memo: ""
-          })
+    fetch("/save_result/", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfTokenEl.value,
+      },
+      body: JSON.stringify({
+        genre: genreName,
+        recipe_url: "",
+        memo: ""
       })
-      .then(res => res.json())
-      .then(data => {
-          if (data.status === 'success') {
-              console.log("履歴に自動保存されました");
-          }
-      })
-      .catch(err => console.error("履歴保存エラー:", err));
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        console.log("履歴に自動保存されました");
+      }
+    })
+    .catch(err => console.error("履歴保存エラー:", err));
   }
 
-  drawWheel();
+  // ---------------------------------------------------------
+  // 5. AI提案機能（変数の定義順序 修正版）
+  // ---------------------------------------------------------
+  askAiBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const moodValue = aiInput.value.trim();
+    if (!moodValue) {
+      alert("今の気分や体調を入力してください（例：さっぱりした和食）");
+      return;
+    }
+
+    askAiBtn.disabled = true;
+    aiLoading.classList.remove("hidden");
+
+    const csrfTokenEl = document.querySelector("[name=csrfmiddlewaretoken]");
+
+    fetch("/ai_suggest/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfTokenEl ? csrfTokenEl.value : "",
+      },
+      body: JSON.stringify({ mood: moodValue })
+    })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "AIの呼び出しに失敗しました。");
+      }
+      return data;
+    })
+    .then(data => {
+      if (data && data.status === "success") {
+        
+        // 1. 【最優先】ループ処理の前に、まず maxCount などの設定値を定義する
+        const maxCount = itemCount ? Number(itemCount.value) : 10; 
+        let addedCount = 0;
+        let suggestions = [];
+        
+        // 2. サーバーからのデータを配列に変換する
+        if (Array.isArray(data.suggestions)) {
+          suggestions = data.suggestions;
+        } else if (typeof data.suggestions === 'string') {
+          suggestions = data.suggestions.split(/[,、\s]+/).filter(Boolean);
+        } else if (data.genres && Array.isArray(data.genres)) {
+          suggestions = data.genres;
+        }
+
+        // 3. 配列のループ処理を実行（ここで maxCount を使うので、1番の定義より後である必要があります）
+        suggestions.forEach(item => {
+          const trimmedItem = item.trim();
+          if (genres && genres.length < maxCount && !genres.includes(trimmedItem)) {
+            genres.push(trimmedItem);
+            addedCount++;
+          }
+        });
+
+        // 4. 画面とルーレットの再描画
+        renderList();
+        drawWheel();
+        
+        if (addedCount > 0) {
+          alert(`AIの提案から ${addedCount} 個のジャンルを追加しました！`);
+        } else {
+          alert("新しいジャンルは追加されませんでした（上限に達しているか、既に登録済みです）。");
+        }
+      }
+    })
+    .catch(err => {
+      console.error("AI提案エラー:", err);
+      alert(err.message || "通信エラーが発生しました。");
+    })
+    .finally(() => {
+      // 成功・失敗に関わらず、必ずボタンとローディングを元に戻す
+      askAiBtn.disabled = false;
+      aiLoading.classList.add("hidden");
+      aiInput.value = "";
+    });
+  });
 });
